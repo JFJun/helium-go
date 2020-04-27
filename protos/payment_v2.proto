@@ -1,0 +1,14 @@
+syntax = "proto3";
+package protos;
+
+message PaymentV2{
+    bytes payer = 1;
+    repeated Payment payments = 2;
+    uint64 fee = 3;
+    uint64 nonce = 4;
+    bytes signature = 5;
+}
+message Payment{
+    bytes payee = 1;
+    uint64 amount = 2;
+}
