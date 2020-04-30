@@ -1,7 +1,9 @@
 package test
 
 import (
+	"crypto/ed25519"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"github.com/JFJun/helium-go/crypto"
 	"github.com/JFJun/helium-go/transactions"
@@ -47,5 +49,19 @@ func TestParsePrivate(t *testing.T) {
 	//	fmt.Println(err)
 	//}
 	//fmt.Println(hex.EncodeToString(entropy))
+
+}
+
+func TestCreateAddress(t *testing.T) {
+
+	kp2 := crypto.NewKeypairFromHex(1, "1f5b981baca0420259ab53996df7a8ce0e3549c6616854e7dff796304bafb6bf")
+	priv2 := ed25519.NewKeyFromSeed(kp2.PrivateKey)
+
+	pub2 := make(crypto.PublicKey, 32)
+
+	copy(pub2, priv2[32:])
+	fmt.Println(hex.EncodeToString(pub2))
+	fmt.Println(pub2)
+	fmt.Println(kp2.CreateAddress(pub2))
 
 }

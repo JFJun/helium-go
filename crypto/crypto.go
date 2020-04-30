@@ -14,10 +14,16 @@ Helium 支持ed25519和NIST p-256两种非对称加密格式
 type Curves interface {
 	GenerateKey() (PrivateKey, PublicKey)
 	GetVersion() []byte
+	NewKeyFromSeed(seed []byte) (PrivateKey, PublicKey)
 }
 
 type PrivateKey []byte
 type PublicKey []byte
+
+const (
+	PrivateKeyLen = 32
+	PublicKeyLen  = 32
+)
 
 func NewCurve(version int) Curves {
 	var c Curves
@@ -43,10 +49,16 @@ func (ec *Ed25519Curve) GenerateKey() (PrivateKey, PublicKey) {
 		panic(err)
 	}
 
-	return PrivateKey(priv), PublicKey(pub)
+	return PrivateKey(priv.Seed()), PublicKey(pub)
 }
 func (ec *Ed25519Curve) GetVersion() []byte {
 	return ec.version
+}
+func (ec *Ed25519Curve) NewKeyFromSeed(seed []byte) (PrivateKey, PublicKey) {
+	priv := ed25519.NewKeyFromSeed(seed)
+	pubkey := make([]byte, 32)
+	copy(pubkey, priv[32:])
+	return priv.Seed(), pubkey
 }
 
 //=====================================================================================================================//
@@ -72,11 +84,15 @@ func (nc *NISTP256Curve) GetVersion() []byte {
 	return nc.version
 }
 
+func (nc *NISTP256Curve) NewKeyFromSeed(seed []byte) (PrivateKey, PublicKey) {
+	return nil, nil
+}
+
 func (priv PrivateKey) Sign(version int, message []byte) []byte {
 	var data []byte
 	if version == 1 {
-		p := ed25519.PrivateKey(priv)
-		data = ed25519.Sign(p, message)
+		privKey := ed25519.NewKeyFromSeed(priv)
+		data = ed25519.Sign(privKey, message)
 	} else {
 		//todo
 	}

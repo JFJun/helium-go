@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"encoding/hex"
 	"github.com/JFJun/helium-go/utils"
 	"github.com/btcsuite/btcutil/base58"
 )
@@ -23,6 +24,15 @@ func NewKeypairFromWif(version int, wif string) *Keypair {
 	kp := New(version)
 	//todo
 	//kp.PrivateKey =
+	return kp
+}
+func NewKeypairFromHex(version int, privHex string) *Keypair {
+	kp := New(version)
+	data, err := hex.DecodeString(privHex)
+	if err != nil {
+		return nil
+	}
+	kp.PrivateKey = data
 	return kp
 }
 func (kp *Keypair) GenerateKey() (PrivateKey, PublicKey) {
