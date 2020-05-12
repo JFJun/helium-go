@@ -146,6 +146,13 @@ func (kp *Keypair) SetPrivateKey(privateKey []byte) {
 	kp.privateKey = privateKey
 	return
 }
+func (kp *Keypair) SetPrivateKeyToNull() {
+	if kp.privateKey != nil {
+		tmp := make([]byte, len(kp.privateKey))
+		kp.privateKey = tmp
+		return
+	}
+}
 
 func (kp *Keypair) Sign(message []byte) ([]byte, error) {
 	if kp.privateKey == nil {
