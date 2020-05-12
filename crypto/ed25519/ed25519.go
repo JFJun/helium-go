@@ -22,9 +22,3 @@ func (ec *Ed25519Curve) GenerateKey() ([]byte, []byte) {
 func (ec *Ed25519Curve) GetVersion() []byte {
 	return ec.Version
 }
-func (ec *Ed25519Curve) NewKeyFromSeed(seed []byte) ([]byte, []byte) {
-	priv := ed25519.NewKeyFromSeed(seed)
-	pubkey := make([]byte, 32)
-	copy(pubkey, priv[32:])
-	return priv.Seed(), pubkey
-}

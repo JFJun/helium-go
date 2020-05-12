@@ -12,18 +12,7 @@ Helium 支持ed25519和NIST p-256两种非对称加密格式
 type Curves interface {
 	GenerateKey() ([]byte, []byte)
 	GetVersion() []byte
-	NewKeyFromSeed(seed []byte) ([]byte, []byte)
 }
-
-const (
-	NISTP256Version = iota
-	Ed25519Version
-)
-
-const (
-	PrivateKeyLen = 32
-	PublicKeyLen  = 32
-)
 
 func NewCurve(version int) Curves {
 	var c Curves

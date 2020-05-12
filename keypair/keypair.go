@@ -11,6 +11,8 @@ import (
 )
 
 const (
+	NISTP256Version = iota
+	Ed25519Version
 	WIFVersion = 0x80
 )
 
@@ -28,12 +30,15 @@ func New(version int) *Keypair {
 	return ks
 }
 
-func NewKeypairFromWif(version int, wif string) *Keypair {
+func NewKeypairFromWIF(version int, wif string) *Keypair {
 	kp := New(version)
-	//todo
-	//kp.PrivateKey =
+	err := kp.decodeWIF(wif)
+	if err != nil {
+		return nil
+	}
 	return kp
 }
+
 func NewKeypairFromHex(version int, privHex string) *Keypair {
 	kp := New(version)
 	data, err := hex.DecodeString(privHex)
@@ -48,11 +53,11 @@ func (kp *Keypair) GenerateKey() ([]byte, []byte) {
 }
 
 /*
-生成wif格式的私钥以及对应的地址
+新生成wif格式的私钥以及对应的地址
 */
-func (kp *Keypair) GeneerateWifAndAddress() (wif, address string) {
+func (kp *Keypair) GenerateWifAndAddress() (wif, address string) {
 	priv, pub := kp.GenerateKey()
-	kp.privateKey = priv
+	//kp.privateKey = priv
 	if len(priv) != 32 || len(pub) != 32 {
 		return "", ""
 	}
@@ -102,6 +107,25 @@ func (kp *Keypair) decodeWIF(wif string) error {
 	return nil
 }
 
+func (kp *Keypair) CreateAddressable() *Addressable {
+	if kp.privateKey == nil {
+		return nil
+	}
+	priv := ed25519.NewKeyFromSeed(kp.privateKey)
+	pub := make([]byte, 32)
+	copy(pub, priv[32:])
+	address := kp.CreateAddress(pub)
+	var bin []byte
+	v := kp.curve.GetVersion()
+	bin = append(bin, v...)
+	bin = append(bin, pub...)
+	aa := new(Addressable)
+	aa.base58 = address
+	aa.bin = bin
+	aa.publicKey = pub
+	return aa
+}
+
 func (kp *Keypair) CreateAddress(publicKey []byte) string {
 	var (
 		payload  []byte
@@ -118,13 +142,23 @@ func (kp *Keypair) CreateAddress(publicKey []byte) string {
 	return base58.Encode(vpayload)
 }
 
-func (kp *Keypair) Sign(message []byte) []byte {
+func (kp *Keypair) SetPrivateKey(privateKey []byte) {
+	kp.privateKey = privateKey
+	return
+}
+
+func (kp *Keypair) Sign(message []byte) ([]byte, error) {
+	if kp.privateKey == nil {
+		return nil, errors.New("private key is null")
+	}
 	var data []byte
 	if kp.version == 1 {
 		privKey := ed25519.NewKeyFromSeed(kp.privateKey)
 		data = ed25519.Sign(privKey, message)
 	} else {
 		//todo
+		//privKey:=nist_p256.NewNISTP256PrivateBySeed(kp.privateKey)
+		//ecdsa.Sign(rand.Reader,privKey,message)
 	}
-	return data
+	return data, nil
 }

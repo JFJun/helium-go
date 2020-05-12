@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/sha256"
+	"errors"
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"strconv"
@@ -98,4 +101,18 @@ func MathAdd(temp float64, temp2 float64, de int32) float64 {
 
 	reulsat, _ := strconv.ParseFloat(d3.String(), 64)
 	return reulsat
+}
+
+func ValidHeliumAddress(address string) error {
+	if address == "" {
+		return errors.New("valid address is null")
+	}
+	data := base58.Decode(address)
+	checkSum1 := data[len(data)-4:]
+	payload := data[:len(data)-4]
+	checkSum2 := DoubleSha256(payload)[:4]
+	if !bytes.Equal(checkSum1, checkSum2) {
+		return errors.New("valid checksum error")
+	}
+	return nil
 }
