@@ -14,11 +14,12 @@ import (
 var (
 	alice    = "148d8KTRcKA5JKPekBcKFd4KfvprvFRpjGtivhtmRmnZ8MFYnP3"
 	bob      = "13M8dUbxymE3xtiAXszRkGMmezMhBS8Li7wEsMojLdb4Sdxc4wc"
+	TmpSig   = make([]byte, 64)
 	from     = keypair.NewAddressable(bob)
 	to       = keypair.NewAddressable(alice)
-	v1       = NewPaymentV1Tx(from, to, 10, 0, 1, nil)
+	v1       = NewPaymentV1Tx(from, to, 16384, 0, 1, TmpSig)
 	toAmount = map[string]uint64{alice: 10}
-	v2       = NewPaymentV2Tx(from, toAmount, 0, 1, nil)
+	v2       = NewPaymentV2Tx(from, toAmount, 0, 1, TmpSig)
 	kp       = keypair.NewKeypairFromHex(1, "72eb1995e90e8b7c0054dcf594f4822572eb1995e90e8b7c0054dcf594f48225")
 )
 
@@ -89,4 +90,18 @@ func TestPaymentV2Tx_SignTransaction(t *testing.T) {
 		--- PASS: TestPaymentV2Tx_SignTransaction (0.00s)
 		PASS
 	*/
+}
+
+func TestPaymentV1Tx_SetFee(t *testing.T) {
+
+	payload, err := v1.Serialize()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(payload)
+	fmt.Println(len(payload))
+	fee := CalculateFee(int64(len(payload)), int64(24), int64(5000))
+	fmt.Println(fee)
+	v1.SetFee(uint64(fee))
+	v1.Serialize()
 }
