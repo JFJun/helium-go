@@ -25,8 +25,8 @@ var (
 )
 
 func Test_CreateAndSubmitPayment1(t *testing.T) {
-	payload, err := v1.Serialize()
-	transactions.CalculateFee(len(payload))
+	//payload, err := v1.Serialize()
+	//transactions.CalculateFee(int64(payload))
 	v1Tx, err := v1.BuildTransaction()
 	if err != nil {
 		panic(err)
