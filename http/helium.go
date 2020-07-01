@@ -256,3 +256,19 @@ func (hr *HeliumRpc) GetVars() (*RespVars, error) {
 	}
 	return &resp, nil
 }
+func (hr *HeliumRpc) GetCurrentPrices() (*RespCurrentPrices, error) {
+	url := fmt.Sprintf("%s/v1/oracle/prices/current", hr.url)
+	var data map[string]RespCurrentPrices
+	err := HttpGet(url, &data)
+	if err != nil {
+		return nil, err
+	}
+	if data == nil {
+		return nil, errors.New("get current prices error,resp data is null")
+	}
+	resp := data["data"]
+	if &resp == nil {
+		return nil, errors.New("parse resp current price error, data is null")
+	}
+	return &resp, nil
+}

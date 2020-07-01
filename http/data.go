@@ -89,3 +89,7 @@ type RespVars struct {
 	TxnFeeMultiplier int64 `json:"txn_fee_multiplier"`
 	//todo add another field
 }
+type RespCurrentPrices struct {
+	Price int64 `json:"price"`
+	Block int64 `json:"block"`
+}

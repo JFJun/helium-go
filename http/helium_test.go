@@ -74,3 +74,12 @@ func TestHeliumRpc_GetVars(t *testing.T) {
 	fmt.Println(resp.DcPayloadSize)
 	fmt.Println(resp.TxnFeeMultiplier)
 }
+func TestHeliumRpc_GetCurrentPrices(t *testing.T) {
+	resp, err := hr.GetCurrentPrices()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(resp.Price)
+	fmt.Println(resp.Block)
+}

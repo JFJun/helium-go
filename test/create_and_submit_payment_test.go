@@ -17,13 +17,16 @@ var (
 	bob      = "13M8dUbxymE3xtiAXszRkGMmezMhBS8Li7wEsMojLdb4Sdxc4wc"
 	from     = keypair.NewAddressable(bob)
 	to       = keypair.NewAddressable(alice)
-	v1       = transactions.NewPaymentV1Tx(from, to, 10, 30000, 1, nil)
+	tmpSig   = make([]byte, 64)
+	v1       = transactions.NewPaymentV1Tx(from, to, 10, 0, 1, tmpSig)
 	toAmount = map[string]uint64{alice: 10}
-	v2       = transactions.NewPaymentV2Tx(from, toAmount, 0, 1, nil)
+	v2       = transactions.NewPaymentV2Tx(from, toAmount, 0, 1, tmpSig)
 	kp       = keypair.NewKeypairFromHex(1, "72eb1995e90e8b7c0054dcf594f4822572eb1995e90e8b7c0054dcf594f48225")
 )
 
 func Test_CreateAndSubmitPayment1(t *testing.T) {
+	payload, err := v1.Serialize()
+	transactions.CalculateFee(len(payload))
 	v1Tx, err := v1.BuildTransaction()
 	if err != nil {
 		panic(err)

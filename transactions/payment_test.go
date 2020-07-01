@@ -17,7 +17,7 @@ var (
 	TmpSig   = make([]byte, 64)
 	from     = keypair.NewAddressable(bob)
 	to       = keypair.NewAddressable(alice)
-	v1       = NewPaymentV1Tx(from, to, 16384, 0, 1, TmpSig)
+	v1       = NewPaymentV1Tx(from, to, 16383, 0, 1, TmpSig)
 	toAmount = map[string]uint64{alice: 10}
 	v2       = NewPaymentV2Tx(from, toAmount, 0, 1, TmpSig)
 	kp       = keypair.NewKeypairFromHex(1, "72eb1995e90e8b7c0054dcf594f4822572eb1995e90e8b7c0054dcf594f48225")
