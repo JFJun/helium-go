@@ -45,6 +45,10 @@ func NewPaymentV2Tx(from *keypair.Addressable, toAmount map[string]uint64, fee, 
 	return v2
 }
 
+func (v2 *PaymentV2Tx) SetFee(fee uint64) {
+	v2.Fee = fee
+}
+
 func (v2 *PaymentV2Tx) BuildTransaction() ([]byte, error) {
 	btpV2 := new(protos.BlockchainTxnPaymentV2)
 	if v2.Payer != nil {

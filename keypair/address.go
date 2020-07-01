@@ -39,7 +39,7 @@ func (aa *Addressable) GetBin() []byte {
 	return aa.bin
 }
 
-func (aa *Addressable) GetPubllicKey() []byte {
+func (aa *Addressable) GetPublicKey() []byte {
 	if aa == nil {
 		return nil
 	}

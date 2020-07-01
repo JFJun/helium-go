@@ -239,3 +239,20 @@ func (hr *HeliumRpc) GetHotpotsByAccount(address string) {
 		panic(err)
 	}
 }
+
+func (hr *HeliumRpc) GetVars() (*RespVars, error) {
+	url := fmt.Sprintf("%s/v1/vars", hr.url)
+	var data map[string]RespVars
+	err := HttpGet(url, &data)
+	if err != nil {
+		return nil, err
+	}
+	if data == nil {
+		return nil, errors.New("get vars error,resp data is null")
+	}
+	resp := data["data"]
+	if &resp == nil {
+		return nil, errors.New("parse resp data error, data is null")
+	}
+	return &resp, nil
+}

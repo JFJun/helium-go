@@ -83,3 +83,9 @@ type RespAccount struct {
 	Balance          uint64 `json:"balance"`
 	Address          string `json:"address"`
 }
+
+type RespVars struct {
+	DcPayloadSize    int64 `json:"dc_payload_size"`
+	TxnFeeMultiplier int64 `json:"txn_fee_multiplier"`
+	//todo add another field
+}
