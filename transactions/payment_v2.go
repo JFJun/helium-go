@@ -49,7 +49,7 @@ func (v2 *PaymentV2Tx) SetFee(fee uint64) {
 	v2.Fee = fee
 }
 
-func (v2 *PaymentV2Tx) BuildTransaction() ([]byte, error) {
+func (v2 *PaymentV2Tx) BuildTransaction(isForSign bool) ([]byte, error) {
 	btpV2 := new(protos.BlockchainTxnPaymentV2)
 	if v2.Payer != nil {
 		btpV2.Payer = v2.Payer.GetBin()
@@ -60,7 +60,7 @@ func (v2 *PaymentV2Tx) BuildTransaction() ([]byte, error) {
 	if v2.Fee > 0 {
 		btpV2.Fee = v2.Fee
 	}
-	if v2.Sig != nil {
+	if v2.Sig != nil && !isForSign {
 		btpV2.Signature = v2.Sig
 	}
 	//btpV1.Amount = v1.Amount
@@ -77,7 +77,7 @@ func (v2 *PaymentV2Tx) BuildTransaction() ([]byte, error) {
 }
 func (v2 *PaymentV2Tx) Serialize() ([]byte, error) {
 	txn := new(protos.BlockchainTxn)
-	data, err := v2.BuildTransaction()
+	data, err := v2.BuildTransaction(false)
 	if err != nil {
 		return nil, err
 	}

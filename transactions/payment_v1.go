@@ -30,7 +30,7 @@ func (v1 *PaymentV1Tx) SetFee(fee uint64) {
 	v1.Fee = fee
 }
 
-func (v1 *PaymentV1Tx) BuildTransaction() ([]byte, error) {
+func (v1 *PaymentV1Tx) BuildTransaction(isForSign bool) ([]byte, error) {
 	btpV1 := new(protos.BlockchainTxnPaymentV1)
 	if v1.Payer != nil {
 		btpV1.Payer = v1.Payer.GetBin()
@@ -38,23 +38,21 @@ func (v1 *PaymentV1Tx) BuildTransaction() ([]byte, error) {
 	if v1.Payee != nil {
 		btpV1.Payee = v1.Payee.GetBin()
 	}
+	btpV1.Amount = v1.Amount
 	if v1.Fee > 0 {
 		btpV1.Fee = v1.Fee
 	}
-	if v1.Sig != nil {
+	btpV1.Nonce = v1.Nonce
+	if v1.Sig != nil && !isForSign {
 		btpV1.Signature = v1.Sig
 	}
-	btpV1.Amount = v1.Amount
-	btpV1.Nonce = v1.Nonce
+
 	return proto.Marshal(btpV1)
 }
 func (v1 *PaymentV1Tx) Serialize() ([]byte, error) {
 	txn := new(protos.BlockchainTxn)
-	data, err := v1.BuildTransaction()
-	if err != nil {
-		return nil, err
-	}
 	var btpV1 protos.BlockchainTxnPaymentV1
+	data, err := v1.BuildTransaction(false)
 	err = proto.Unmarshal(data, &btpV1)
 	if err != nil {
 		return nil, err

@@ -17,7 +17,7 @@ var (
 	TmpSig   = make([]byte, 64)
 	from     = keypair.NewAddressable(bob)
 	to       = keypair.NewAddressable(alice)
-	v1       = NewPaymentV1Tx(from, to, 16383, 0, 1, TmpSig)
+	v1       = NewPaymentV1Tx(from, to, 1843929291, 0, 1, TmpSig)
 	toAmount = map[string]uint64{alice: 10}
 	v2       = NewPaymentV2Tx(from, toAmount, 0, 1, TmpSig)
 	kp       = keypair.NewKeypairFromHex(1, "72eb1995e90e8b7c0054dcf594f4822572eb1995e90e8b7c0054dcf594f48225")
@@ -56,8 +56,10 @@ func TestPaymentV2Tx_Serialize(t *testing.T) {
 }
 
 func TestPaymentV1Tx_SignTransaction(t *testing.T) {
-
-	v1Tx, err := v1.BuildTransaction()
+	payload, _ := v1.Serialize()
+	fee := CalculateFee(int64(len(payload)), int64(24), int64(5000))
+	v1.SetFee(fee)
+	v1Tx, err := v1.BuildTransaction(true)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +67,10 @@ func TestPaymentV1Tx_SignTransaction(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(base64.StdEncoding.EncodeToString(sig))
+	//fmt.Println(base64.StdEncoding.EncodeToString(sig))
+	v1.SetSignature(sig)
+	d, _ := v1.Serialize()
+	fmt.Println(base64.StdEncoding.EncodeToString(d))
 	/*
 		=== RUN   TestPaymentV1Tx_SignTransaction
 		yxLonpII3WdNiNg99WaRlS623HzkxIqPM7Vvjr62JtFnZrSP4zudIvz6vP/U9arXIlDbiyvO5nfiNM6tPmuzBw==
@@ -75,7 +80,7 @@ func TestPaymentV1Tx_SignTransaction(t *testing.T) {
 }
 func TestPaymentV2Tx_SignTransaction(t *testing.T) {
 
-	v2Tx, err := v2.BuildTransaction()
+	v2Tx, err := v2.BuildTransaction(true)
 	if err != nil {
 		panic(err)
 	}
